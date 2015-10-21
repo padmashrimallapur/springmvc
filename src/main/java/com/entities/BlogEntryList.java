@@ -15,4 +15,7 @@ public class BlogEntryList {
         return blogEntryList;
     }
 
+    public int getBlogId() {
+        return 0;
+    }
 }

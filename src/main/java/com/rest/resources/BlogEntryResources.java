@@ -1,5 +1,7 @@
 package com.rest.resources;
 
+import com.entities.Blog;
+import com.entities.BlogEntry;
 import org.springframework.hateoas.ResourceSupport;
 
 public class BlogEntryResources extends ResourceSupport {
@@ -11,6 +13,16 @@ public class BlogEntryResources extends ResourceSupport {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public BlogEntry toBlogEntry() {
+        return null;
+    }
+
+    public Blog toBlog() {
+        Blog blog = new Blog();
+        blog.setTitle(this.getTitle());
+        return blog;
     }
 
     @Override
@@ -38,4 +50,5 @@ public class BlogEntryResources extends ResourceSupport {
         result = 31 * result + (title != null ? title.hashCode() : 0);
         return result;
     }
+
 }

@@ -1,53 +1,107 @@
 package com.mvc;
 
-import com.core.services.BlogEntryServices;
 import com.entities.BlogEntry;
-import com.entities.BlogEntryList;
 import com.rest.resources.BlogEntryResources;
 import com.rest.resources.asm.BlogEntryResourceAsm;
+import com.services.BlogEntryService;
+import com.services.exceptions.BlogNotFoundException;
+import com.services.exceptions.NotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 
 @Controller
+@RequestMapping("/rest/blog")
 public class BlogEntryController {
 
-    private BlogEntryServices blogEntryServices;
+    private BlogEntryService blogEntryServices;
 
-    public BlogEntryController(BlogEntryServices blogEntryServices) {
+    public BlogEntryController(BlogEntryService blogEntryServices) {
         this.blogEntryServices = blogEntryServices;
     }
 
-    @RequestMapping(value = "/home", method = POST)
-    public
-    @ResponseBody
-    BlogEntry getBlogEntry(@RequestBody BlogEntryList blogEntry) {
-        List<BlogEntry> blogEntryList = blogEntry.getBlogEntryList();
-        blogEntryList.get(0).setTitle(blogEntryList.get(1).getTitle().toUpperCase());
-        return blogEntryList.get(0);
-    }
 
-    @RequestMapping(value = "/getBlogEntryId/{id}", method = GET)
+    /*@RequestMapping(value = "/{blogEntryId}", method = RequestMethod.GET)
     public
-    @ResponseBody
-    ResponseEntity<BlogEntryResources> getEntryById(@PathVariable long id) {
-        BlogEntry entryById = blogEntryServices.getEntryById(id);
+    @ResponseBody ResponseEntity<BlogEntryResources> getEntryById(@PathVariable long blogEntryId) {
+        BlogEntry entryById = blogEntryServices.findBlogEntry(blogEntryId);
         if (entryById != null) {
             BlogEntryResources resources = new BlogEntryResourceAsm().toResource(entryById);
             return new ResponseEntity<>(resources, OK);
         } else {
             return new ResponseEntity<>(NOT_FOUND);
         }
+    } */
+
+   /*
+    @RequestMapping(value = "/{blogId}", method = RequestMethod.GET)
+    public
+    @ResponseBody
+    ResponseEntity<BlogEntryResources> getBlog(@PathVariable Long blogId) {
+        Blog blog = blogEntryServices.findBlog(blogId);
+        BlogEntryResources resources = new BlogResourceAsm().toResource(blog);
+        return new ResponseEntity<>(resources, OK);
+    } */
+
+    @RequestMapping(value = "/{blogId}", method = RequestMethod.GET)
+    public
+    @ResponseBody
+    ResponseEntity<BlogEntryResources> getBlogEntry(@PathVariable Long blogId) {
+
+        try {
+            BlogEntry blogEntry = blogEntryServices.findBlogEntry(blogId);
+            if (blogEntry != null) {
+                BlogEntryResources resources = new BlogEntryResourceAsm().toResource(blogEntry);
+                return new ResponseEntity<>(resources, OK);
+            } else {
+                return new ResponseEntity<>(NOT_FOUND);
+            }
+
+        } catch (BlogNotFoundException exception) {
+            throw new NotFoundException(exception);
+
+        }
+
     }
+
+
+    @RequestMapping(value = "/{blogEntryId}", method = RequestMethod.DELETE)
+    public
+    @ResponseBody
+    ResponseEntity<BlogEntryResources> deleteBlogEntry(@PathVariable Long blogEntryId) {
+        BlogEntry blogEntry = blogEntryServices.deleteBlogEntry(blogEntryId);
+
+        if (blogEntry != null) {
+            BlogEntryResources blogEntryResources = new BlogEntryResourceAsm().toResource(blogEntry);
+            return new ResponseEntity<>(blogEntryResources, OK);
+        } else {
+
+            return new ResponseEntity<>(NOT_FOUND);
+        }
+    }
+
+    @RequestMapping(value = "/{blogId}", method = RequestMethod.PUT)
+    public
+    @ResponseBody
+    ResponseEntity<BlogEntryResources> updateBlogEntry(@PathVariable Long blogId, @RequestBody BlogEntryResources sentBlogEntry) {
+        BlogEntry updateBlogEntry = blogEntryServices.updateBlogEntry(blogId, sentBlogEntry.toBlogEntry());
+
+        if (updateBlogEntry != null) {
+
+            BlogEntryResources blogEntryResources = new BlogEntryResourceAsm().toResource(updateBlogEntry);
+            return new ResponseEntity<>(blogEntryResources, OK);
+        } else {
+
+            return new ResponseEntity<>(NOT_FOUND);
+        }
+
+
+    }
+
+
+
 }
