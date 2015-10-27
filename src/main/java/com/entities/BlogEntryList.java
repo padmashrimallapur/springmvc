@@ -1,11 +1,18 @@
 package com.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
 public class BlogEntryList {
 
-    private List<BlogEntry> blogEntryList;
+    private List<BlogEntry> blogEntryList = new ArrayList<>();
+    private Long blogId;
+
+    public BlogEntryList(Long blogId, List<BlogEntry> blogEntryList) {
+        this.blogId = blogId;
+        this.blogEntryList = blogEntryList;
+    }
 
     public void setBlogEntryList(List<BlogEntry> blogEntryList) {
         this.blogEntryList = blogEntryList;
@@ -15,7 +22,12 @@ public class BlogEntryList {
         return blogEntryList;
     }
 
-    public int getBlogId() {
-        return 0;
+    public long getBlogId() {
+        return blogId;
+    }
+
+
+    public List<BlogEntry> getEntries() {
+        return blogEntryList;
     }
 }

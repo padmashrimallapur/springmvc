@@ -6,6 +6,18 @@ import org.springframework.hateoas.ResourceSupport;
 
 public class BlogEntryResources extends ResourceSupport {
     private String title;
+    private String content;
+
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+
 
     public String getTitle() {
         return title;
@@ -50,5 +62,6 @@ public class BlogEntryResources extends ResourceSupport {
         result = 31 * result + (title != null ? title.hashCode() : 0);
         return result;
     }
+
 
 }

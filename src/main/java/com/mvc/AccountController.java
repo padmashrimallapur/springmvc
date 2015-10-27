@@ -1,14 +1,17 @@
 package com.mvc;
 
 import com.entities.Account;
-import com.entities.Blog;
 import com.rest.resources.AccountResources;
-import com.rest.resources.BlogEntryResources;
-import com.rest.resources.BlogResources;
+import com.rest.resources.BlogListResources;
 import com.rest.resources.asm.AccountResourceAsm;
-import com.rest.resources.asm.BlogResourceAsm;
+import com.rest.resources.asm.BlogListResourceAsm;
 import com.services.AccountService;
-import com.services.exceptions.*;
+import com.services.exceptions.AccountDoesNotExistsException;
+import com.services.exceptions.AccountExistsException;
+import com.services.exceptions.ConflictException;
+import com.services.exceptions.NotFoundException;
+import com.services.utilitiy.BlogList;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +31,7 @@ import static org.springframework.http.HttpStatus.OK;
 public class AccountController {
     private AccountService service;
 
-
+    @Autowired
     public AccountController(AccountService service) {
         this.service = service;
     }
@@ -62,7 +65,7 @@ public class AccountController {
         return new ResponseEntity<>(accountResource, OK);
     }
 
-    @RequestMapping(value = "/{accountId}/blogs", method = RequestMethod.POST)
+   /* @RequestMapping(value = "/{accountId}/blogs", method = RequestMethod.POST)
     public ResponseEntity<BlogResources> createBlog(@PathVariable Long accountId, @RequestBody BlogEntryResources resources) {
 
         try {
@@ -77,10 +80,23 @@ public class AccountController {
             throw new ConflictException(blogEx);
         }
 
-    }
+    } */
 
 
     public Account getAccount(Long id) {
         return service.findAcount(id);
+    }
+
+    @RequestMapping(value = "/{accountId}/blogs", method = RequestMethod.GET)
+    public ResponseEntity<BlogListResources> findAllBlogs(@PathVariable Long accountId) {
+
+        try {
+            BlogList blogList = service.findBlogsByAccount(accountId);
+            BlogListResources blogListResources = new BlogListResourceAsm().toResource(blogList);
+            return new ResponseEntity<>(blogListResources, HttpStatus.OK);
+        } catch (AccountDoesNotExistsException exception) {
+            throw new NotFoundException(exception);
+        }
+
     }
 }

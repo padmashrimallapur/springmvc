@@ -55,4 +55,7 @@ public class BlogController {
     }
 
 
+    public Class<?> findAllBlogEntries(long blogId) {
+        return null;
+    }
 }

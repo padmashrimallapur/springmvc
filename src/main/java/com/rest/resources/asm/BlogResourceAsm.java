@@ -6,8 +6,7 @@ import com.mvc.BlogController;
 import com.rest.resources.BlogResources;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 
 public class BlogResourceAsm extends ResourceAssemblerSupport<Blog, BlogResources> {
 
@@ -19,14 +18,11 @@ public class BlogResourceAsm extends ResourceAssemblerSupport<Blog, BlogResource
     @Override
     public BlogResources toResource(Blog blog) {
         BlogResources resource = new BlogResources();
-
         resource.setTitle(blog.getTitle());
         resource.add(linkTo(BlogController.class).slash(blog.getId()).withSelfRel());
-        resource.add(linkTo(BlogController.class).slash(blog.getId()).slash("entries").withRel("entries"));
+        resource.add(linkTo(BlogController.class).slash(blog.getId()).slash("blogEntries").withRel("entries"));
         if (blog.getOwner() != null)
             resource.add(linkTo(AccountController.class).slash(blog.getOwner().getId()).withRel("owner"));
         return resource;
-
-
     }
 }

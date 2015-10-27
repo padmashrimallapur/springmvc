@@ -1,10 +1,29 @@
 package com.rest.resources.asm;
 
 import com.entities.BlogEntryList;
+import com.mvc.BlogController;
+import com.rest.resources.BlogEntryListResources;
 import com.rest.resources.BlogEntryResources;
+import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 
-public class BlogEntryListResourceAsm {
-    public BlogEntryResources toResource(BlogEntryList list) {
-        return null;
+import java.util.List;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
+public class BlogEntryListResourceAsm extends ResourceAssemblerSupport<BlogEntryList, BlogEntryListResources> {
+
+    public BlogEntryListResourceAsm() {
+        super(BlogController.class, BlogEntryListResources.class);
+    }
+
+    @Override
+    public BlogEntryListResources toResource(BlogEntryList list) {
+        List<BlogEntryResources> resources = new BlogEntryResourceAsm().toResources(list.getEntries());
+        BlogEntryListResources listResource = new BlogEntryListResources();
+        listResource.setEntries(resources);
+        listResource.add(linkTo(methodOn(BlogController.class).findAllBlogEntries(list.getBlogId())).withSelfRel());
+        return listResource;
     }
 }
+

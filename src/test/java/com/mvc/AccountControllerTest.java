@@ -5,6 +5,8 @@ import com.entities.Blog;
 import com.services.AccountService;
 import com.services.exceptions.AccountDoesNotExistsException;
 import com.services.exceptions.BlogExistsException;
+import com.services.utilitiy.BlogList;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -14,10 +16,13 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.hamcrest.Matchers.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -211,15 +216,12 @@ public class AccountControllerTest {
                 .andExpect(jsonPath("$.name", is(createAccount.getName())))
                 .andExpect(status().isCreated());
 
-
         verify(service).creatAccount(accountCaptor.capture());
 
         String password = accountCaptor.getValue().getName();
         assertEquals("Test", password);
 
-
     }
-
 
     @Test
     public void getExistingAccount() throws Exception {
@@ -240,9 +242,35 @@ public class AccountControllerTest {
     @Test
     public void getNonExistingAccount() throws Exception {
         when(service.findAcount(1L)).thenReturn(null);
-
         mockMvc.perform(get("/rest/accounts/1")).andExpect(status().isNotFound());
     }
 
-}
 
+    @Test
+    public void findAllBlogsForAccount() throws Exception {
+        List<Blog> list = new ArrayList<>();
+
+        Blog blogA = new Blog();
+        blogA.setId(1L);
+        blogA.setTitle("Title A");
+        list.add(blogA);
+
+        Blog blogB = new Blog();
+        blogB.setId(2L);
+        blogB.setTitle("Title B");
+
+        list.add(blogB);
+
+        BlogList blogList = new BlogList(list);
+
+        when(service.findBlogsByAccount(1L)).thenReturn(blogList);
+
+        //noinspection unchecked
+        mockMvc.perform(get("/rest/accounts/1/blogs"))
+                .andExpect(jsonPath("$.blogs[*].title",
+                        hasItems(Matchers.endsWith("Title A"), Matchers.endsWith("Title B"))))
+                .andExpect(status().isOk());
+
+    }
+
+}

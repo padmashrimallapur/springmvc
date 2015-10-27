@@ -4,6 +4,7 @@ public class BlogEntry {
     private String title;
     private long id;
     private Blog blog;
+    private String content;
 
 
     public String getTitle() {
@@ -13,7 +14,6 @@ public class BlogEntry {
     public void setTitle(String title) {
         this.title = title;
     }
-
 
     public long getId() {
         return id;
@@ -27,34 +27,16 @@ public class BlogEntry {
         return blog;
     }
 
-    @Override
-    public String toString() {
-        return "BlogEntry{" +
-                "title='" + title + '\'' +
-                ", id=" + id +
-                ", blog=" + blog +
-                '}';
+    public void setBlog(Blog blog) {
+        this.blog = blog;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        BlogEntry blogEntry = (BlogEntry) o;
-
-        if (id != blogEntry.id) return false;
-        //noinspection SimplifiableIfStatement
-        if (title != null ? !title.equals(blogEntry.title) : blogEntry.title != null) return false;
-        return !(blog != null ? !blog.equals(blogEntry.blog) : blogEntry.blog != null);
-
+    public String getContent() {
+        return content;
     }
 
-    @Override
-    public int hashCode() {
-        int result = title != null ? title.hashCode() : 0;
-        result = 31 * result + (int) (id ^ (id >>> 32));
-        result = 31 * result + (blog != null ? blog.hashCode() : 0);
-        return result;
+    public void setContent(String content) {
+        this.content = content;
     }
+
 }

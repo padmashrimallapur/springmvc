@@ -1,11 +1,11 @@
 package com.rest.resources.asm;
 
+import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import com.entities.BlogEntry;
 import com.mvc.BlogController;
 import com.mvc.BlogEntryController;
 import com.rest.resources.BlogEntryResources;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
@@ -27,6 +27,4 @@ public class BlogEntryResourceAsm extends ResourceAssemblerSupport<BlogEntry, Bl
         }
         return res;
     }
-
-
 }
