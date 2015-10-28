@@ -6,6 +6,7 @@ import com.rest.resources.asm.BlogEntryResourceAsm;
 import com.services.BlogEntryService;
 import com.services.exceptions.BlogNotFoundException;
 import com.services.exceptions.NotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -15,11 +16,12 @@ import static org.springframework.http.HttpStatus.OK;
 
 
 @Controller
-@RequestMapping("/rest/blog")
+@RequestMapping("/rest/blogEntries")
 public class BlogEntryController {
 
     private BlogEntryService blogEntryServices;
 
+    @Autowired
     public BlogEntryController(BlogEntryService blogEntryServices) {
         this.blogEntryServices = blogEntryServices;
     }

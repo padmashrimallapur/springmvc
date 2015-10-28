@@ -349,4 +349,30 @@ public class AccountControllerTest {
                 .andExpect(jsonPath("$.accounts[*].name", hasItems(endsWith("Test"), endsWith("Test B"))))
                 .andExpect(status().isOk());
     }
+
+
+    @Test
+    public void findAccountsByName() throws Exception {
+        List<Account> list = new ArrayList<>();
+
+        Account accountA = new Account();
+        accountA.setId(1L);
+        accountA.setPassword("password");
+        accountA.setName("Account A");
+        list.add(accountA);
+
+
+        Account accountB = new Account();
+        accountB.setId(2L);
+        accountB.setName("Account B");
+        accountB.setPassword("password");
+        list.add(accountB);
+
+        AccountList accountList = new AccountList(list);
+
+        mockMvc.perform(get("/rest/accounts").param("name", "AccountA"))
+                .andExpect(jsonPath("$.account[*].name", everyItem(endsWith("Account A"))))
+                .andExpect(status().isOk());
+
+    }
 }
