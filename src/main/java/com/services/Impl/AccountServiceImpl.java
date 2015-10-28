@@ -11,6 +11,7 @@ import com.services.exceptions.AccountExistsException;
 import com.services.exceptions.BlogExistsException;
 import com.services.exceptions.BlogNotFoundException;
 import com.services.utilitiy.BlogList;
+import com.utilities.AccountList;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class AccountServiceImpl implements AccountService {
@@ -80,5 +81,15 @@ public class AccountServiceImpl implements AccountService {
         }
         return new BlogEntryList(blogId, entryRepo.findByBlogId(blogId));
 
+    }
+
+    @Override
+    public AccountList findAllAccounts() {
+        return new AccountList(accountRepo.findAllAccounts());
+    }
+
+    @Override
+    public Account findByAccountName(String name) {
+        return accountRepo.findAccountByName(name);
     }
 }

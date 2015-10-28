@@ -4,6 +4,7 @@ import com.entities.Account;
 import com.entities.Blog;
 import com.entities.BlogEntryList;
 import com.services.utilitiy.BlogList;
+import com.utilities.AccountList;
 
 public interface AccountService {
 
@@ -18,4 +19,8 @@ public interface AccountService {
     BlogList findBlogsByAccount(long l);
 
     BlogEntryList findAllBlogEntries(Long accountId);
+
+    AccountList findAllAccounts();
+
+    Account findByAccountName(String name);
 }

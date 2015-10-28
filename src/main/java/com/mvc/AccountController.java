@@ -1,30 +1,26 @@
 package com.mvc;
 
 import com.entities.Account;
-import com.rest.resources.AccountResources;
-import com.rest.resources.BlogListResources;
+import com.entities.Blog;
+import com.rest.resources.*;
+import com.rest.resources.asm.AccountListResourceAsm;
 import com.rest.resources.asm.AccountResourceAsm;
 import com.rest.resources.asm.BlogListResourceAsm;
+import com.rest.resources.asm.BlogResourceAsm;
 import com.services.AccountService;
-import com.services.exceptions.AccountDoesNotExistsException;
-import com.services.exceptions.AccountExistsException;
-import com.services.exceptions.ConflictException;
-import com.services.exceptions.NotFoundException;
+import com.services.exceptions.*;
 import com.services.utilitiy.BlogList;
+import com.utilities.AccountList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.OK;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 @Controller
 @RequestMapping("/rest/accounts")
@@ -35,6 +31,27 @@ public class AccountController {
     public AccountController(AccountService service) {
         this.service = service;
     }
+
+
+    @RequestMapping(method = RequestMethod.GET)
+    public ResponseEntity<AccountListResorce> findAllAcounts(@RequestParam(value = "name", required = false) String name) {
+        AccountList list = null;
+        if (name == null) {
+            list = service.findAllAccounts();
+        } else {
+            Account account = service.findByAccountName(name);
+            if (account == null) {
+                list = new AccountList(new ArrayList<Account>());
+            } else {
+                list = new AccountList(Arrays.asList(account));
+            }
+        }
+
+        AccountListResorce resorce = new AccountListResourceAsm().toResource(list);
+        return new ResponseEntity<>(resorce, HttpStatus.OK);
+    }
+
+
 
 
     @RequestMapping(method = RequestMethod.POST)
@@ -50,22 +67,8 @@ public class AccountController {
         }
     }
 
-    @RequestMapping(value = "/{accountId}", method = RequestMethod.GET)
-    public ResponseEntity<AccountResources> getAccountById(@PathVariable Long accountId) {
-        //DATABASE serarch
-        Account acount = service.findAcount(accountId);
 
-        //If not then return Not Found
-        if (acount == null) {
-            return new ResponseEntity<>(NOT_FOUND);
-        }
-
-        //If account is there then we need processes it and return to UI (UI format)
-        AccountResources accountResource = new AccountResourceAsm().toResource(acount);
-        return new ResponseEntity<>(accountResource, OK);
-    }
-
-   /* @RequestMapping(value = "/{accountId}/blogs", method = RequestMethod.POST)
+    @RequestMapping(value = "/{accountId}/blogs", method = RequestMethod.POST)
     public ResponseEntity<BlogResources> createBlog(@PathVariable Long accountId, @RequestBody BlogEntryResources resources) {
 
         try {
@@ -80,11 +83,20 @@ public class AccountController {
             throw new ConflictException(blogEx);
         }
 
-    } */
+    }
 
+    @RequestMapping(value = "/{accountId}", method = RequestMethod.GET)
+    public ResponseEntity<AccountResources> getAccount(@PathVariable Long accountId) {
+        Account account = service.findAcount(accountId);
 
-    public Account getAccount(Long id) {
-        return service.findAcount(id);
+        if (account != null) {
+            AccountResources resources = new AccountResourceAsm().toResource(account);
+            return new ResponseEntity<>(resources, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        //return service.findAcount(id);
     }
 
     @RequestMapping(value = "/{accountId}/blogs", method = RequestMethod.GET)

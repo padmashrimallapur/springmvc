@@ -4,8 +4,10 @@ import com.entities.Account;
 import com.entities.Blog;
 import com.services.AccountService;
 import com.services.exceptions.AccountDoesNotExistsException;
+import com.services.exceptions.AccountExistsException;
 import com.services.exceptions.BlogExistsException;
 import com.services.utilitiy.BlogList;
+import com.utilities.AccountList;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,10 +21,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -80,7 +83,10 @@ public class AccountControllerTest {
         mockMvc.perform(post("/rest/accounts/1/blogs")
                 .content("{\"title\" : \"Test Title\"}")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print()).andExpect(jsonPath("$.title", is("Test Title")))
+                .andDo(print())
+                .andExpect(jsonPath("$.title", is("Test Title")))
+                .andExpect(jsonPath("$.links[*].href", hasItem(endsWith("/blog/1"))))
+                .andExpect(header().string("Location", endsWith("/blog/1")))
                 .andExpect(status().isCreated());
     }
 
@@ -273,4 +279,74 @@ public class AccountControllerTest {
 
     }
 
+
+    @Test
+    public void findAllBlogsForNonExistingAccount() throws Exception {
+
+        when(service.findBlogsByAccount(1L)).thenThrow(new AccountDoesNotExistsException());
+
+        mockMvc.perform(get("/rest/accounts/1/blogs"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void createAccountNonExistingUserName() throws Exception {
+        Account createdAccount = new Account();
+        createdAccount.setId(1L);
+        createdAccount.setName("test");
+        createdAccount.setPassword("Test");
+
+        when(service.creatAccount(any(Account.class))).thenReturn(createdAccount);
+
+        mockMvc.perform(post("/rest/accounts")
+                .content("{\"name\" : \"test\" ,\"password\" : \"Test\"}")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(header().string("Location", endsWith("rest/accounts/1")))
+                .andExpect(jsonPath("$.name", is(createdAccount.getName())))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void createAccountExistingUserName() throws Exception {
+        Account createdAccount = new Account();
+        createdAccount.setId(1L);
+        createdAccount.setName("test");
+        createdAccount.setPassword("Test test");
+
+        when(service.creatAccount(any(Account.class))).thenThrow(new AccountExistsException());
+
+        mockMvc.perform(post("/rest/accounts")
+                .content("{\"name\" : \"test\",\"password\" : \"Test test\"}")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict());
+
+    }
+
+
+    @Test
+    public void findAllAccounts() throws Exception {
+        List<Account> list = new ArrayList<>();
+
+        Account accountA = new Account();
+        accountA.setName("Test");
+        accountA.setPassword("Password");
+        accountA.setId(1L);
+        list.add(accountA);
+
+        Account accountB = new Account();
+        accountB.setId(2L);
+        accountB.setName("Test B");
+        accountB.setPassword("password B");
+        list.add(accountB);
+
+        AccountList accountList = new AccountList(list);
+
+        when(service.findAllAccounts()).thenReturn(accountList);
+
+        mockMvc.perform(get("/rest/accounts"))
+                .andDo(print())
+                .andExpect(jsonPath("$.accounts[*].name", hasItems(endsWith("Test"), endsWith("Test B"))))
+                .andExpect(status().isOk());
+    }
 }

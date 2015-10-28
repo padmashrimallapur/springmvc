@@ -49,4 +49,10 @@ public class JpaAccountRepo implements AccountRepo {
         }
     }
 
+    @Override
+    public List<Account> findAllAccounts() {
+        Query query = em.createQuery("SELECT a FROM Account a");
+        return query.getResultList();
+    }
+
 }
