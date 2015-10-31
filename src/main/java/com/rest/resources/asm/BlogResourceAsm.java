@@ -1,12 +1,12 @@
 package com.rest.resources.asm;
 
-import com.entities.Blog;
-import com.mvc.AccountController;
-import com.mvc.BlogController;
+import com.core.models.entities.Blog;
+import com.rest.mvc.AccountController;
+import com.rest.mvc.BlogController;
 import com.rest.resources.BlogResources;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 public class BlogResourceAsm extends ResourceAssemblerSupport<Blog, BlogResources> {
 

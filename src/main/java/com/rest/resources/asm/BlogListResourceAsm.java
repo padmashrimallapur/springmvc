@@ -1,8 +1,8 @@
 package com.rest.resources.asm;
 
-import com.mvc.BlogController;
+import com.core.services.utilitiy.BlogList;
+import com.rest.mvc.BlogController;
 import com.rest.resources.BlogListResources;
-import com.services.utilitiy.BlogList;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 
 public class BlogListResourceAsm extends ResourceAssemblerSupport<BlogList, BlogListResources> {

@@ -1,6 +1,6 @@
 package com.rest.resources;
 
-import com.entities.Account;
+import com.core.models.entities.Account;
 import org.springframework.hateoas.ResourceSupport;
 
 public class AccountResources extends ResourceSupport {

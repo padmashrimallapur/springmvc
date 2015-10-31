@@ -1,9 +1,9 @@
 package com.rest.resources.asm;
 
-import com.mvc.AccountController;
+import com.core.services.utilitiy.AccountList;
+import com.rest.mvc.AccountController;
 import com.rest.resources.AccountListResorce;
 import com.rest.resources.AccountResources;
-import com.utilities.AccountList;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 
 import java.util.List;

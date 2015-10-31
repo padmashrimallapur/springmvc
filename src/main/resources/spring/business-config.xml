@@ -10,7 +10,7 @@
         http://www.springframework.org/schema/tx
         http://www.springframework.org/schema/tx/spring-tx.xsd">
 
-    <context:component-scan base-package="com.respositories.jpa"/>
+    <context:component-scan base-package="com.core.respositories.jpa"/>
     <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
         <property name="username" value="sa"/>
         <property name="password" value="sa"/>
@@ -28,8 +28,9 @@
                 <entry key="hibernate.show_sql" value="true"/>
             </map>
         </property>
-        <property name="packagesToScan" value="com.entities"/>
+        <property name="packagesToScan" value="com.core.models.entities"/>
     </bean>
     <tx:annotation-driven/>
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"/>
+    <context:component-scan base-package="com.core.services.Impl"/>
 </beans>
